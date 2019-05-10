@@ -60,7 +60,7 @@ client.on('ready', function(){
 client.on('message', message => {
 if (message.content.startsWith(prefix + 'help')) { /// This is The DMS Code Send The Help In DMS // Code By NotGucci
     let pages = [`**
-        ***__General orders__***
+        ***__الأوامرُ العامة__***
 **
 ${prefix}allbots/لعرض جميع البوتات الي بالسيرفر
 ${prefix}server/يعرض لك معلومات عن السيرفر
@@ -94,7 +94,7 @@ ${prefix}contact/ارسال اقتراح او لمراسلة صاحب البوت
 **
   `
 ,`
-        ***__Administrative Orders__***
+      ***--أوامرُ الأِدمن--***
 **
 ${prefix}move @user /  لسحب الشخص الى روومك
 ${prefix}bc / رسالة جماعية الى كل اعضاء السيرفر
@@ -126,7 +126,7 @@ ${prefix}color <number> / لختيار لون
 ${prefix}deletecolors <number> / لحذف الالوان
 **
    `,`
-        ***__Music orders__***
+        ***__أوامرُ الموسيقي__***
 **
 ${prefix}play / لتشغيل أغنية برآبط أو بأسم
 ${prefix}skip / لتجآوز الأغنية الحآلية
@@ -137,7 +137,7 @@ ${prefix}stop / لإخرآج البوت من الروم
 ${prefix}np / لمعرفة الأغنية المشغلة حآليا
 ${prefix}queue / لمعرفة قآئمة التشغيل
 **
-        ***__Games orders__***
+        ***__أوامرُ الألعابِ__***
  **       
 ${prefix}rps / حجر ورقة مقص
 ${prefix}speed / اسرع كتابة

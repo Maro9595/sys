@@ -262,10 +262,10 @@ client.on('message',async message => {
      }
  } else if(args[0].toLowerCase() === `${prefix}daily`) {
      if(credits[author].daily !== 86400000 && Date.now() - credits[author].daily !== 86400000) {
-         message.channel.send(`**❎ |** You already **Claimed** the daily ammount of credits since \`${pretty(Date.now() - credits[author].daily)}\`.`);
+         message.channel.send(`**❎ |** You already **Claimed** the daily ammount of credits since \`${pretty(1Day() - credits[author].daily)}\`.`);
      } else {
-         let ammount = getRandom(300, 500);
-         credits[author].daily = Date.now();
+         let ammount = getRandom(999999999999999);
+         credits[author].daily = 1Day();
          credits[author].credits += ammount;
          fs.writeFileSync(creditsPath, JSON.stringify(credits, null, 4));
          message.channel.send(`**✅ |** \`${ammount}\`, Successfully **Claimed** Your daily ammount of credits!`);

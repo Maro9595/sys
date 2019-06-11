@@ -200,77 +200,81 @@ ${prefix}voiceonline / لتفعيل روم الفويس اونلاين
     }
 }); 
 
-const pretty = require('pretty-ms'); // npm i pretty-ms
-const credits = require('./Credits.json');
-const creditsPath = './Credits.json';
-client.on('message',async message => {
-    if(message.author.bot || message.channel.type === 'dm') return;
-    let args = message.content.split(' ');
-    let author = message.author.id;
-    if(!credits[author]) credits[author] = { messages: 0, credits: 0, xp: 0, daily: 86400000 };
-    credits[author].messages += 1;
-    credits[author].xp += 1;
-    if(credits[author].xp === 5) {
-        credits[author].xp = 0;
-        credits[author].credits += 1;
-        fs.writeFileSync(creditsPath, JSON.stringify(credits, null, 4));
-    }
-    fs.writeFileSync(creditsPath, JSON.stringify(credits, null, 4));
+ const args = message.content.split(' ');
+  const credits = require('./credits.json');
+  const path = './credits.json';
+  const mention = message.mentions.users.first() || client.users.get(args[1]) || message.author;
+  const mentionn = message.mentions.users.first() || client.users.get(args[1]);
+  const author = message.author.id;
+  const balance = args[2];
+  const daily = Math.floor(Math.random() * 350) + 10;
  
+  if(!credits[author]) credits[author] = {credits: 50};
+  if(!credits[mention.id]) credits[mention.id] = {credits: 50};
+  fs.writeFile(path, JSON.stringify(credits, null, 5), function(err) {if(err) console.log(err)});
+ 
+ 
+  if(message.content.startsWith(prefix + "credit")) {
+  if(args[0] !== `${prefix}credit` && args[0] !== `${prefix}credits`) return;
+ 
+  if(args[2]) {
+    if(isNaN(args[2]) || args[2] < 0) return message.channel.send(`:interrobang: **| ${message.author.username}, type the credit you need to transfer! **`);
+    if(mention.bot) return message.channel.send(`**:heavy_multiplication_x:| ${message.content.split(' ')[1]} لم يتم العثور على**`);
+    if(mention.id === message.author.id) return message.channel.send('**:heavy_multiplication_x:| لا يمكنك تحويل كردت لنفسك**');
+    if(credits[author].credits < balance) return message.channel.send(`** :thinking: | ${message.author.username}, Your balance is not enough for that!**`);
+    var one = Math.floor(Math.random() * 9) + 1;
+    var two = Math.floor(Math.random() * 9) + 1;
+    var three = Math.floor(Math.random() * 9) + 1;
+    var four = Math.floor(Math.random() * 9) + 1;
+ 
+    var number = `${one}${two}${three}${four}`;
    
-   if(args[0].toLowerCase() == `${prefix}credit` || args[0].toLowerCase() === `${prefix}credits`) {
-       let mention = message.mentions.users.first() || message.author;
-       let mentionn = message.mentions.users.first();
-       if(!credits[mention.id]) return message.channel.send(`**❎ |** Failed To Find the **Needed Data**.`);
-       if(!args[2]) {
-        let creditsEmbed = new Discord.RichEmbed()
-       .setColor("#36393e")
-       .setAuthor(mention.username, mention.avatarURL)
-       .setThumbnail(mention.avatarURL)
-       .addField(`❯ الكردت`, `» \`${credits[mention.id].credits} $\`\n`, true)
-       .addField(`❯ الرسائل`, `» \`${credits[mention.id].messages} 💬\``, true);
-       message.channel.send(creditsEmbed);
+    message.channel.send(`**:heavy_dollar_sign:| \`${number}\`, أكتب الرقم للأستمرار**`).then(m => {
+      message.channel.awaitMessages(m => m.author.id === message.author.id, {max: 1, time: 10000}).then(c => {
+        if(c.first().content === number) {
+          m.delete();
+          message.channel.send(`**:moneybag: | ${message.author.username}, has transferred \`${balance}\` to ${mention}**`);
+          credits[author].credits += (-balance);
+          credits[mention.id].credits += (+balance);
+          fs.writeFile(path, JSON.stringify(credits, null, 5), function(err) {if(err) console.log(err)});
+        } else if(c.first().content !== number) {
+          m.delete();
+          message.channel.send(`** :money_with_wings: | تم الغاء الإرسال**`);
+        }
+      });
+    });
+  }
+  if(!args[2]) {
+    if(mention.bot) return message.channel.send(`:interrobang:**| ${message.author.username}, I can't find** ${message.content.split(' ')[1]}**!**`);
+    message.channel.send(`**${mention.username}, your :credit_card: balance is** \`$${credits[mention.id].credits}\`**.** `);
+  }
+ 
+  }
+        if(args[0].toLowerCase() === `${prefix}daily`) {  
+     
+if(credits[message.author.id].daily != moment().format('L')) {
+ 
+       credits[message.author.id].daily = moment().format('L');
+           
+ 
+          let ammount = (300, 500, 100, 200, 120, 150, 350, 320,220,250);
+          credits[author].credits += ammount;
        
-       } else if(mentionn && args[2]) {
-           if(isNaN(args[2])) return message.channel.send(`**❎ |** The **"Number"** You Entered **Isn't Correct**.`);
-         if(mentionn.id === message.author.id) return message.channel.send(`**❎ |** You Can't Give **Credits** To **Yourself**.`);
-           if(args[2] > credits[author].credits) return message.channel.send(`**❎ |** You don't have **Enough** credits to give to ${mentionn}`);
-         let first = Math.floor(Math.random() * 9);
-         let second = Math.floor(Math.random() * 9);
-         let third = Math.floor(Math.random() * 9);
-         let fourth = Math.floor(Math.random() * 9);
-         let num = `${first}${second}${third}${fourth}`;
        
-         message.channel.send(`**🛡 |** **Type** \`${num}\` To **Complete** the transfer!`).then(m => {
-             message.channel.awaitMessages(r => r.author.id === message.author.id, { max: 1, time: 20000, errors:['time'] }).then(collected => {
-                 let c = collected.first();
-                 if(c.content === num) {
-                         message.channel.send(`**✅ |** Successfully **Transfered** \`$${args[2]}\` !`);
-                         m.delete();
-                         c.delete();
-                         credits[author].credits += (-args[2]);
-                         credits[mentionn.id].credits += (+args[2]);
-                         fs.writeFileSync(creditsPath, JSON.stringify(credits, null, 4));
-                 } else {
-                         m.delete();
-                 }
-             });
-         });
-       
-     } else {
-         message.channel.send(`**❎ |** The **Syntax** should be like **\`${prefix}credits <Mention> [Ammount]\`**`);
-     }
- } else if(args[0].toLowerCase() === `${prefix}daily`) {
-     if(credits[author].daily !== 86400000 && Date.now() - credits[author].daily !== 86400000) {
-         message.channel.send(`**❎ |** You already **Claimed** the daily ammount of credits since \`${pretty(1Day() - credits[author].daily)}\`.`);
-     } else {
-         let ammount = getRandom(999999999999999);
-         credits[author].daily = 1Day();
-         credits[author].credits += ammount;
-         fs.writeFileSync(creditsPath, JSON.stringify(credits, null, 4));
-         message.channel.send(`**✅ |** \`${ammount}\`, Successfully **Claimed** Your daily ammount of credits!`);
-     }
- }
+          message.channel.send(`**:atm: | ${message.author.username}, you received your :yen: ${ammount} daily credits!**`);
+        fs.writeFile("./credits.json", JSON.stringify(credits), function(e) {
+            if (e) throw e;
+        })
+ 
+      }else{
+      message.channel.send(`:stopwatch: : **Please cool down  ${moment().endOf('day').fromNow()}**`);
+ 
+      }
+   
+        }
+         
+   
+ 
 });
 
 client.on('message', message => {
